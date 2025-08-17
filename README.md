@@ -22,34 +22,6 @@ React (Vite + TypeScript) + FastAPI (Python) をベースにした MVP プロジ
 - **DB**: SQLite → PostgreSQL へ移行可能
 - **ジョブ管理**: APScheduler (ローカル) / AWS EventBridge + Lambda (本番想定)
 
----
-
-## 📂 ディレクトリ構成
-
-material-price-app/
-├─ backend/ # FastAPI (Python)
-│ ├─ app/
-│ │ ├─ main.py # API エントリポイント
-│ │ ├─ db.py # DB セットアップ
-│ │ ├─ models.py # SQLAlchemy モデル
-│ │ ├─ crud.py # CRUD / 更新処理
-│ │ ├─ deps.py # 認証 (MVPはダミー)
-│ │ └─ sources/ # 価格取得アダプタ
-│ ├─ .env.example
-│ └─ requirements.txt
-├─ frontend/ # React (Vite + TS)
-│ ├─ src/
-│ │ ├─ api.ts # API クライアント
-│ │ ├─ types.ts # 型定義
-│ │ ├─ components/ # UI コンポーネント
-│ │ └─ pages/ # ページ
-│ ├─ index.html
-│ ├─ package.json
-│ ├─ tsconfig.json
-│ └─ vite.config.ts
-├─ docker-compose.yml # 将来の運用用
-└─ README.md
-
 
 ---
 
@@ -65,4 +37,3 @@ pip install -r requirements.txt
 
 cp .env.example .env           # 環境変数を設定
 uvicorn app.main:app --reload --port 8000
-
