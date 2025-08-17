@@ -1,51 +1,68 @@
-# Material Price App (MVP)
+# 📊 Material Price App
 
-React (Vite, TypeScript) + FastAPI (Python) スターター
+建設業向けの **資材単価管理アプリ**
+React (Vite + TypeScript) + FastAPI (Python) をベースにした MVP プロジェクトです。
 
-## 概要
-- 毎日 0:00 JST に資材単価を更新（ローカルは APScheduler でデモ。実運用は EventBridge + Lambda を推奨）
-- ユーザー登録アイテムのみ、最新単価と前日比（↑↓）を表示
-- 価格取得ソースはアダプタ方式（ダミー実装済）
+---
 
-## セットアップ
+## 🚀 機能 (MVP)
 
-### 1) Backend (FastAPI)
+- ユーザーが登録した資材だけを管理
+- **毎日 0:00 (JST)** に単価を更新（デモでは手動更新/ランダム変動）
+- 単価の **前日比 (↑↓, %)** を表示
+- アイテムごとに履歴（過去30日）を保持
+- 単位換算対応（例: 1本=3.4kg）
+
+---
+
+## 🛠 技術スタック
+
+- **フロントエンド**: React + Vite + TypeScript
+- **バックエンド**: FastAPI + SQLAlchemy + SQLite (デフォルト)
+- **DB**: SQLite → PostgreSQL へ移行可能
+- **ジョブ管理**: APScheduler (ローカル) / AWS EventBridge + Lambda (本番想定)
+
+---
+
+## 📂 ディレクトリ構成
+
+material-price-app/
+├─ backend/ # FastAPI (Python)
+│ ├─ app/
+│ │ ├─ main.py # API エントリポイント
+│ │ ├─ db.py # DB セットアップ
+│ │ ├─ models.py # SQLAlchemy モデル
+│ │ ├─ crud.py # CRUD / 更新処理
+│ │ ├─ deps.py # 認証 (MVPはダミー)
+│ │ └─ sources/ # 価格取得アダプタ
+│ ├─ .env.example
+│ └─ requirements.txt
+├─ frontend/ # React (Vite + TS)
+│ ├─ src/
+│ │ ├─ api.ts # API クライアント
+│ │ ├─ types.ts # 型定義
+│ │ ├─ components/ # UI コンポーネント
+│ │ └─ pages/ # ページ
+│ ├─ index.html
+│ ├─ package.json
+│ ├─ tsconfig.json
+│ └─ vite.config.ts
+├─ docker-compose.yml # 将来の運用用
+└─ README.md
+
+
+---
+
+## ⚙️ セットアップ
+
+### 1. Backend (FastAPI)
+
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-# .env を作成（.env.example をコピー）
+
+cp .env.example .env           # 環境変数を設定
 uvicorn app.main:app --reload --port 8000
-```
-
-### 2) Frontend (Vite + React + TS)
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-- フロントは `http://localhost:5173`
-- バックエンドは `http://localhost:8000`
-
-## 環境変数
-- backend/.env
-```
-DATABASE_URL=sqlite+aiosqlite:///./app.db
-JWT_SECRET=dev-secret
-SCHEDULE_TZ=Asia/Tokyo
-```
-
-## API (ざっくり)
-- `GET /items` : ユーザーのアイテム + 最新価格（ダミー認証: user_id=00000000-0000-0000-0000-000000000001）
-- `POST /items` : アイテム登録
-- `GET /items/{id}/prices?limit=30` : 履歴
-- `POST /refresh` : 価格更新（デモ: ダミーアダプタでランダム変動）
-
-## 今後の拡張
-- DB を Postgres に変更（DATABASE_URL を差し替え）
-- 認証を Cognito に
-- 価格取得アダプタを実データソースに差し替え
-- EventBridge + Lambda で 0:00 JST 実行
-```
 
