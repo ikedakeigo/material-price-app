@@ -1,4 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+importexport default function App() {
+  const [items, setItems] = useState<LatestItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+  const [error, setError] = useState<string|undefined>()
+  const [showForm, setShowForm] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // 単位の選択肢
+  const displayUnits = ['本', 'セット', '枚', '袋', 'm', 'kg', '㎡', 'L', 'トン', '箱']
+  const baseUnits = ['kg', 'm', '枚', '㎡', 'L', 'トン', '本']{ useEffect, useState, useRef } from "react";
 import { Plus, RefreshCw, BarChart3, AlertCircle, Package } from "lucide-react";
 import { api } from "../api";
 import ItemCard from "../components/ItemCard";
@@ -12,10 +23,6 @@ export default function App() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-
-  // 単位の選択肢
-  const displayUnits = ["本", "セット", "枚", "袋", "m", "kg", "㎡", "L", "トン", "箱"];
-  const baseUnits = ["kg", "m", "枚", "㎡", "L", "トン", "本"];
 
   const load = async () => {
     setLoading(true);
@@ -129,23 +136,16 @@ export default function App() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">表示単位</label>
-                  <select name="unit" defaultValue="セット" className="input-field">
-                    {displayUnits.map((unit) => (
-                      <option key={unit} value={unit}>
-                        {unit}
-                      </option>
-                    ))}
-                  </select>
+                  <input name="unit" placeholder="本" defaultValue="本" className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">基準単位</label>
-                  <select name="base_unit" defaultValue="kg" className="input-field">
-                    {baseUnits.map((unit) => (
-                      <option key={unit} value={unit}>
-                        {unit}
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                    name="base_unit"
+                    placeholder="kg"
+                    defaultValue="kg"
+                    className="input-field"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">換算係数</label>
