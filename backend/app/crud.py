@@ -13,6 +13,26 @@ async def create_item(user_id: str, name: str, unit: str, base_unit: str,
                       conversion_factor: float, category: Optional[str] = None,
                       source_key: Optional[str] = None):
     async with AsyncSessionLocal() as session:
+        # 既存アイテムチェック（ユーザー×名前で一意）
+        exists = await session.execute(
+            select(Item).where(Item.user_id == user_id, Item.name == name)
+        )
+        item = exists.scalar_one_or_none()
+
+        if item:
+            # 既存アイテムがある場合は属性を更新
+            item.unit = unit
+            item.base_unit = base_unit
+            item.conversion_factor = conversion_factor
+            if category is not None:
+                item.category = category
+            if source_key is not None:
+                item.source_key = source_key
+            await session.commit()
+            await session.refresh(item)
+            return await _item_with_latest(session, item)
+
+        # 新規作成
         item = Item(
             user_id=user_id,
             name=name,
@@ -111,7 +131,7 @@ async def _upsert_price(session: AsyncSession, item_id: str, priced_at: date, un
     prev_price = float(prev.unit_price) if prev else None
 
     delta = unit_price - prev_price if prev_price is not None else None
-    delta_rate = (delta / prev_price * 100) if prev_price not in (None, 0) else None
+    delta_rate = (delta / prev_price * 100) if prev_price is not None and prev_price != 0 and delta is not None else None
 
     cache = await session.get(LatestPriceCache, item_id)
     if cache:

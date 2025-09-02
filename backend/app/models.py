@@ -19,6 +19,8 @@ class Item(Base):
     source_key: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
+    __table_args__ = (UniqueConstraint("user_id", "name", name="uq_user_item_name"),)
+
 class PriceHistory(Base):
     __tablename__ = "price_history"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
